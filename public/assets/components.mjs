@@ -1,0 +1,19 @@
+import {money,decimal,cents} from '../shared/money.mjs';
+import {dateLabel} from '../shared/dates.mjs';
+export {money,decimal,cents,dateLabel};
+export const e=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+export const icon=(name,extra='')=>`<svg class="icon ${e(extra)}" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-${e(name)}"></use></svg>`;
+export const btn=(label,action,{id='',primary=false,iconName='',disabled=false,extra=''}={})=>`<button type="button" class="button ${primary?'button-primary':'button-secondary'} ${extra}" data-action="${e(action)}" ${id?`data-id="${e(id)}"`:''} ${disabled?'disabled':''}>${iconName?icon(iconName):''}<span>${e(label)}</span></button>`;
+export function input(label,name,value='',{type='text',required=false,moneyField=false,full=false,hint='',max='',maxlength=120}={}){return `<div class="form-field ${full?'full':''}"><label for="f-${e(name)}">${e(label)}</label>${type==='textarea'?`<textarea id="f-${e(name)}" name="${e(name)}" rows="3" maxlength="${maxlength}" ${required?'required':''}>${e(value)}</textarea>`:`<input id="f-${e(name)}" name="${e(name)}" type="${e(type)}" value="${e(value)}" ${required?'required':''} ${moneyField?'data-money inputmode="decimal" autocomplete="off"':''} ${max?`max="${e(max)}"`:''} maxlength="${maxlength}">`}${hint?`<small>${e(hint)}</small>`:''}</div>`;}
+export function select(label,name,values,value='',{full=false,hint=''}={}){return `<div class="form-field ${full?'full':''}"><label for="f-${e(name)}">${e(label)}</label><select id="f-${e(name)}" name="${e(name)}">${values.map(v=>{const [id,text]=Array.isArray(v)?v:[v,v];return `<option value="${e(id)}" ${String(value)===String(id)?'selected':''}>${e(text)}</option>`;}).join('')}</select>${hint?`<small>${e(hint)}</small>`:''}</div>`;}
+export const tag=(label,color='neutral')=>`<span class="tag tag-${e(color)}">${e(label)}</span>`;
+export const typeName=type=>({inflow:'Cobro',outflow:'Pago',transfer:'Traspaso'}[type]||type);
+export const executionName=value=>({scheduled:'Programado',realized:'Realizado',cancelled:'Cancelado'}[value]||value);
+export function signedAmount(m){const n=BigInt(m.execution==='realized'?m.actual_amount_cents:m.amount_cents);return `${m.type==='transfer'?'↔ ':''}${money(m.type==='outflow'?-n:n)}`;}
+export const empty=(title,copy,actions='')=>`<section class="empty-block"><span class="empty-icon">${icon('info')}</span><h2>${e(title)}</h2><p>${e(copy)}</p>${actions?`<div class="row-actions">${actions}</div>`:''}</section>`;
+export function accountOptions(data,emptyLabel='Sin banco asignado'){return [["",emptyLabel],...data.accounts.map(a=>[a.id,`${a.name}${a.archived_at?' · inactiva':''}`])];}
+export function bankName(data,id){return data.accounts.find(a=>a.id===id)?.name||'Sin banco asignado';}
+export const categoryName=(data,id)=>data.categories.find(x=>x.id===id)?.label||'Sin categoría';
+export function heading(kicker,title,subtitle,actions=''){return `<section class="page-heading"><div><p class="eyebrow">${e(kicker)}</p><h1>${e(title)}</h1><p class="page-description">${e(subtitle)}</p></div><div class="row-actions">${actions}</div></section>`;}
+export function metric(title,value,note,ico='bank',color='blue'){return `<article class="metric"><span class="metric-icon tint-${color}">${icon(ico)}</span><div class="metric-copy"><h2>${e(title)}</h2><strong class="metric-value ${color==='red'?'text-red':''}">${e(value)}</strong><p class="metric-note">${e(note)}</p></div></article>`;}
+export function simpleTable(headers,rows){return `<div class="table-scroll"><table><thead><tr>${headers.map(x=>`<th>${e(x)}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;}

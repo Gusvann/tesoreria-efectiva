@@ -1,0 +1,17 @@
+{
+  "name": "tesoreria-efectiva",
+  "version": "1.1.0-demo",
+  "private": true,
+  "type": "module",
+  "description": "Demo frontend de Tesorería efectiva: datos sintéticos y memoria volátil, sin base de datos ni backend",
+  "engines": {"node": ">=22.16.0"},
+  "scripts": {
+    "start": "node scripts/serve.mjs",
+    "dev": "node scripts/serve.mjs",
+    "check": "node scripts/check.mjs",
+    "test": "node --test tests/demo/*.test.mjs",
+    "build": "node scripts/build.mjs"
+  },
+  "dependencies": {},
+  "license": "UNLICENSED"
+}

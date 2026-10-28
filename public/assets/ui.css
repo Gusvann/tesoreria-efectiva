@@ -1,0 +1,513 @@
+/* Shared presentation layer. No financial computation, storage or remote data. */
+:root {
+  --navy: #08184c;
+  --blue: #0648f8;
+  --ink: #13283a;
+  --muted: #5e6c84;
+  --soft: #8793a6;
+  --border: #e5eaf2;
+  --canvas: #f9fafc;
+  --surface: #ffffff;
+  --blue-soft: #eef4ff;
+  --green: #187456;
+  --red: #c64245;
+  --font-heading: 'Sora', 'Inter', system-ui, sans-serif;
+  --font-body: 'Public Sans', 'Inter', system-ui, sans-serif;
+  --radius: 10px;
+}
+* { box-sizing: border-box; }
+html { color-scheme: light; scroll-behavior: smooth; }
+body { margin: 0; color: var(--navy); background: var(--canvas); font: 14px/1.5 var(--font-body); -webkit-font-smoothing: antialiased; }
+button, input { font: inherit; }
+button { cursor: pointer; }
+button, a, input { -webkit-tap-highlight-color: transparent; }
+button { color: inherit; }
+a { color: var(--blue); text-decoration: none; }
+button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid var(--blue); outline-offset: 4px; }
+button[aria-disabled='true'] { cursor: default; }
+button[aria-disabled='true']:hover { border-color: #bccbe6; }
+h1, h2, h3, p { margin: 0; }
+h1, h2, h3, .metric-value, .account-balance { font-family: var(--font-heading); }
+h1 { font-size: clamp(26px, 2.3vw, 32px); line-height: 1.25; letter-spacing: -1.2px; font-weight: 600; }
+h2 { font-size: 15px; line-height: 1.4; letter-spacing: -.35px; font-weight: 600; }
+h3 { font-size: 14px; font-weight: 600; letter-spacing: -.2px; }
+strong { font-weight: 600; }
+small { font-size: 12px; }
+[hidden] { display: none !important; }
+.icon-sprite { position: absolute; height: 0; width: 0; overflow: hidden; pointer-events: none; }
+.icon { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.65; stroke-linecap: round; stroke-linejoin: round; flex: 0 0 auto; vertical-align: middle; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+.skip-link { position: absolute; left: 20px; top: -70px; z-index: 20; background: var(--navy); color: #fff; padding: 10px 18px; border-radius: 4px; }
+.skip-link:focus { top: 10px; }
+.site-header { background: #fff; border-bottom: 1px solid var(--border); }
+.header-inner { max-width: 1536px; min-height: 72px; padding: 0 48px; margin: auto; display: flex; align-items: center; gap: 40px; }
+.brand { display: inline-flex; align-items: center; gap: 13px; white-space: nowrap; font: 600 17px/1.3 var(--font-heading); letter-spacing: -.7px; color: var(--navy); }
+.brand-mark { display: flex; color: var(--blue); }
+.brand-mark .icon { width: 31px; height: 31px; stroke-width: 1.8; }
+.top-nav { display: flex; align-items: stretch; align-self: stretch; gap: 24px; margin-left: auto; }
+.top-nav a, .nav-pending { position: relative; display: inline-flex; align-items: center; padding: 0 2px; border: 0; border-radius: 0; font-size: 13px; background: none; color: #495673; white-space: nowrap; }
+.top-nav a[aria-current='page'] { color: var(--navy); font-weight: 600; }
+.top-nav a[aria-current='page']::after { content: ''; position: absolute; height: 3px; background: var(--blue); bottom: 0; left: 0; right: 0; border-radius: 3px 3px 0 0; }
+.top-nav a:hover { color: var(--blue); }
+.nav-pending { color: #65718a; }
+.header-date { border: 1px solid var(--border); border-radius: 6px; padding: 7px 12px; font-size: 12px; display: inline-flex; align-items: center; gap: 9px; white-space: nowrap; }
+.header-date .icon { width: 17px; height: 17px; color: var(--blue); }
+.main-layout { max-width: 1536px; padding: 30px 48px 24px; margin: auto; }
+.main-layout:focus { outline: none; }
+.page-heading { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-bottom: 24px; min-width: 0; }
+.eyebrow { font-size: 10px; line-height: 1.5; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: #66756f; margin-bottom: 4px; }
+.page-description { color: #52617a; margin-top: 7px; font-size: 13px; }
+.heading-controls { display: flex; flex-direction: column; align-items: flex-end; gap: 9px; flex-shrink: 0; }
+.design-label { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #6a768a; }
+.design-label::before { content: ''; width: 5px; height: 5px; background: #8c9cb2; border-radius: 50%; }
+.period-control { display: flex; border: 1px solid var(--border); border-radius: 6px; background: #fff; padding: 3px; }
+.period-button { background: none; border: 1px solid transparent; padding: 6px 12px; border-radius: 4px; font-size: 11px; color: #4e5c75; white-space: nowrap; }
+.period-button.is-active { color: #fff; border-color: var(--blue); background: var(--blue); }
+.button { border: 1px solid var(--border); border-radius: 6px; min-height: 34px; padding: 7px 13px; display: inline-flex; align-items: center; justify-content: center; gap: 7px; font-size: 12px; line-height: 1.4; white-space: nowrap; }
+.button .icon { width: 16px; height: 16px; }
+.button-primary { background: var(--blue); color: #fff; border-color: var(--blue); }
+.button-secondary { background: #fff; color: var(--navy); }
+.button-icon { border: 0; background: none; padding: 6px; width: 30px; }
+.button-icon span:empty, .note-edit span:empty { display: none; }
+.metrics-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-bottom: 16px; }
+.metric { display: flex; align-items: flex-start; gap: 14px; border: 1px solid var(--border); border-radius: var(--radius); background: #fff; padding: 20px 18px; min-height: 124px; }
+.metric-icon { width: 43px; height: 43px; display: flex; align-items: center; justify-content: center; border-radius: 50%; flex-shrink: 0; }
+.metric-icon .icon { width: 23px; height: 23px; }
+.tint-green { background: #edf6f1; color: var(--green); }
+.tint-blue { background: #eef3ff; color: var(--blue); }
+.tint-red { background: #fdf0ef; color: var(--red); }
+.tint-neutral { background: #f1f3f7; color: var(--navy); }
+.metric-copy { min-width: 0; }
+.metric h2 { font: 400 11px/1.45 var(--font-body); color: #42506b; margin: 1px 0 7px; letter-spacing: 0; }
+.metric-value { font-size: clamp(18px, 1.7vw, 25px); font-weight: 600; line-height: 1.3; letter-spacing: -.6px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.metric-note { display: flex; align-items: center; gap: 4px; margin-top: 8px; font-size: 10px; line-height: 1.4; }
+.metric-note .icon { width: 12px; height: 12px; }
+.text-green { color: var(--green); }
+.text-red { color: var(--red); }
+.text-blue { color: var(--blue); }
+.text-neutral { color: var(--muted); }
+.surface { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); min-width: 0; }
+.charts-grid { display: grid; grid-template-columns: 1.56fr 1fr; gap: 16px; margin-bottom: 16px; }
+.section-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; min-width: 0; }
+.projection-surface, .income-surface { padding: 18px 18px 3px; }
+.chart-legend { display: flex; gap: 18px; font-size: 10px; color: #52617a; }
+.chart-legend span { display: flex; align-items: center; gap: 5px; white-space: nowrap; }
+.dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; flex: 0 0 auto; }
+.dot.blue { background: var(--blue); }
+.dot.soft-blue { background: #6193e8; }
+.dot.navy { background: #142f61; }
+.dot.green { background: #3a9477; }
+.dot.cyan { background: #92cadd; }
+.dot.neutral { background: #8793a6; }
+.dash { width: 15px; height: 0; border-top: 1.5px dashed var(--blue); display: inline-block; }
+.projection-chart, .income-chart { display: block; width: 100%; height: 235px; margin-top: 12px; }
+.chart-grid path { fill: none; stroke: #eff2f7; stroke-width: 1; }
+.chart-labels { fill: #677690; font: 11px var(--font-body); }
+.chart-solid { fill: none; stroke: var(--blue); stroke-width: 2; }
+.chart-projected { fill: none; stroke: var(--blue); stroke-width: 1.8; stroke-dasharray: 5 5; }
+.chart-today { fill: none; stroke: #b1c2e1; stroke-width: 1; stroke-dasharray: 3 3; }
+.chart-dots { fill: var(--blue); }
+.tooltip-caption { fill: #d3def6; font: 10px var(--font-body); }
+.tooltip-number { fill: #fff; font: 600 12px var(--font-body); }
+.bar-in { fill: #59a38d; }
+.bar-out { fill: #6795eb; }
+.secondary-grid { display: grid; grid-template-columns: 1.12fr .94fr 1.08fr; gap: 16px; margin-bottom: 16px; }
+.secondary-grid > .surface { padding: 18px; }
+.small-label { font-size: 10px; color: #6b7890; font-weight: 400; white-space: nowrap; }
+.panel-subtitle { color: var(--muted); font-size: 11px; margin-top: 4px; }
+.distribution-body { display: grid; grid-template-columns: 145px 1fr; gap: 12px; align-items: center; margin-top: 15px; min-height: 155px; }
+.donut { position: relative; width: 145px; height: 145px; }
+.donut svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.donut circle { fill: none; stroke-width: 23px; }
+.donut-track { stroke: #eef1f6; }
+.donut-main { stroke: #142f61; }
+.donut-secondary { stroke: #6193e8; }
+.donut-tertiary { stroke: #92cadd; }
+.donut-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.donut-label strong { font: 600 12px var(--font-heading); letter-spacing: -.4px; }
+.donut-label span { font-size: 10px; color: var(--muted); margin-top: 4px; }
+.distribution-legend { margin: 0; }
+.distribution-legend > div { padding: 8px 0; }
+.distribution-legend dt { display: flex; align-items: center; gap: 6px; font-size: 10px; }
+.distribution-legend dd { margin: 3px 0 0 13px; display: flex; gap: 9px; justify-content: space-between; font-size: 10px; white-space: nowrap; }
+.distribution-legend dd span { color: #6e7c92; }
+.muted { font: 400 12px var(--font-body); color: var(--muted); }
+.payments .small-label { display: none; }
+.payment-bar { margin-top: 14px; }
+.payment-bar > div:first-child { display: flex; justify-content: space-between; align-items: center; font-size: 11px; margin-bottom: 5px; }
+.payment-bar > div:first-child span { display: flex; align-items: center; gap: 6px; }
+.bar-track { height: 4px; background: #f0f3f8; border-radius: 3px; overflow: hidden; }
+.bar-track span { display: block; height: 100%; border-radius: 3px; }
+.fill-nomina { width: 70%; background: #142f61; }
+.fill-servicios { width: 20%; background: #6193e8; }
+.fill-financieros { width: 10%; background: #92cadd; }
+.panel-total { border-top: 1px solid #edf0f6; margin-top: 15px; padding-top: 10px; display: flex; justify-content: space-between; font-size: 11px; }
+.panel-total span { color: var(--muted); }
+.scenario-row { display: grid; grid-template-columns: 31px minmax(82px, 1fr) 60px auto; align-items: center; gap: 8px; padding: 13px 0; border-bottom: 1px solid #eef1f6; }
+.scenario-row:last-child { border: 0; padding-bottom: 0; }
+.scenario-icon { width: 29px; height: 29px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.scenario-icon .icon { width: 16px; height: 16px; }
+.scenario-row strong { display: block; font-size: 11px; }
+.scenario-row small { display: block; color: #6b7890; font-size: 9px; margin-top: 2px; white-space: nowrap; }
+.scenario-value { text-align: right; }
+.spark { width: 100%; height: 27px; fill: none; color: var(--blue); }
+.spark polyline { stroke: currentColor; stroke-width: 1.45; stroke-linejoin: round; stroke-linecap: round; }
+.spark circle { fill: currentColor; }
+.spark.green { color: #2e8f68; }
+.spark.red { color: #c65050; }
+.spark.warm { color: #cc9b62; }
+.spark.purple { color: #8b78b4; }
+.key-indicators { padding: 17px 19px; }
+.indicators-grid { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); margin-top: 16px; }
+.indicator { display: flex; align-items: flex-start; gap: 10px; padding: 0 17px; border-left: 1px solid var(--border); }
+.indicator:first-child { border-left: 0; padding-left: 0; }
+.indicator:last-child { padding-right: 0; }
+.indicator-icon { height: 33px; width: 33px; border-radius: 8px; background: #f3f6fb; color: #39568d; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.indicator-icon .icon { width: 18px; height: 18px; }
+.indicator p { font-size: 10px; color: #52617a; margin-bottom: 4px; }
+.indicator strong { display: block; font: 600 15px var(--font-heading); letter-spacing: -.4px; white-space: nowrap; }
+.indicator small { display: block; font-size: 9px; color: #6b7890; margin-top: 5px; }
+/* Banks: master/detail content, not a second dashboard or a navigation sidebar. */
+.banks-page .page-heading { margin-bottom: 28px; }
+.bank-workspace { display: grid; grid-template-columns: minmax(340px,.94fr) minmax(0,1.5fr); gap: 20px; }
+.bank-list-panel { padding: 16px; }
+.bank-list-toolbar { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 10px; margin-bottom: 12px; }
+.search-preview { display: flex; align-items: center; border: 1px solid #dce4ef; border-radius: 6px; height: 35px; padding: 0 10px; gap: 7px; min-width: 0; }
+.search-preview .icon { width: 16px; height: 16px; color: #6c7c99; }
+.search-preview input { width: 100%; min-width: 0; border: 0; outline-offset: 2px; background: transparent; font-size: 12px; color: var(--navy); padding: 4px 0; }
+.search-preview input::placeholder { color: #6b7c99; opacity: 1; }
+.sort-preview { display: flex; align-items: center; justify-content: space-between; gap: 9px; background: #fff; border: 1px solid #dce4ef; border-radius: 6px; padding: 0 9px; font-size: 10px; min-height: 35px; }
+.sort-preview .icon { width: 14px; height: 14px; }
+.bank-list { display: flex; flex-direction: column; gap: 5px; }
+.bank-option { display: flex; align-items: center; text-align: left; gap: 12px; border: 1px solid transparent; border-radius: 7px; background: #fff; padding: 17px 12px; width: 100%; min-width: 0; min-height: 83px; }
+.bank-option:hover { background: #f7f9fe; }
+.bank-option.is-selected { background: #edf4ff; border-color: #dce9ff; }
+.bank-avatar { display: flex; align-items: center; justify-content: center; width: 41px; height: 41px; border-radius: 50%; font-size: 11px; font-weight: 600; color: #fff; flex-shrink: 0; letter-spacing: -.3px; }
+.bank-avatar.bbva { background: #123970; }
+.bank-avatar.santander { background: #d92330; font: 500 23px var(--font-heading); }
+.bank-avatar.gbm { background: #ede0ca; color: #876e46; }
+.bank-avatar.corporate { background: #258063; }
+.bank-avatar.reserve { background: #7052a0; }
+.bank-avatar.large { width: 50px; height: 50px; font-size: 13px; }
+.bank-avatar.large.santander { font-size: 26px; }
+.bank-option-copy { min-width: 0; flex: 1; }
+.bank-option-copy strong { display: block; font-size: 12px; font-weight: 600; }
+.bank-option-copy small { display: block; color: var(--muted); margin-top: 4px; font-size: 11px; }
+.bank-option-value { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.bank-option-value > strong { font-family: var(--font-heading); font-size: 13px; letter-spacing: -.5px; white-space: nowrap; }
+.bank-option-value .spark { width: 80px; height: 23px; }
+.row-chevron { color: #6d83ad; width: 15px; height: 15px; }
+.list-footnote { border-top: 1px solid #edf1f7; padding-top: 12px; margin: 12px 5px 0; font-size: 10px; color: var(--muted); }
+.account-heading { display: flex; align-items: center; justify-content: space-between; padding: 22px 22px 17px; gap: 10px; }
+.account-identity { display: flex; align-items: center; gap: 13px; min-width: 0; }
+.account-title-line { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.account-title-line h2 { font-size: 18px; letter-spacing: -.65px; }
+.account-identity p { color: var(--muted); font-size: 12px; margin-top: 6px; }
+.status-badge { font-size: 10px; display: inline-flex; align-items: center; gap: 5px; padding: 4px 7px; border-radius: 5px; color: #2d6b55; background: #edf7f2; white-space: nowrap; }
+.status-badge i { width: 5px; height: 5px; border-radius: 50%; background: #349775; }
+.status-badge.neutral-status { background: #f1f3f7; color: #5a6780; }
+.neutral-status i { background: #8a99af; }
+.account-actions { display: flex; align-items: center; gap: 5px; }
+.account-tabs { display: flex; align-items: stretch; gap: 20px; padding: 0 22px; border-bottom: 1px solid var(--border); }
+.account-tab { border: 0; border-bottom: 2px solid transparent; display: inline-flex; align-items: center; background: none; padding: 9px 6px 13px; color: #5d6d88; font-size: 12px; }
+.account-tab.is-current { border-bottom-color: var(--blue); color: var(--blue); font-weight: 600; }
+.account-content { padding: 17px 20px 20px; }
+.account-overview { display: grid; grid-template-columns: 1.3fr 1fr .85fr; background: #f3f7fe; border-radius: 7px; padding: 22px 20px; margin-bottom: 16px; }
+.account-overview > div { padding: 0 20px; border-left: 1px solid #e0e8f4; }
+.account-overview > div:first-child { padding-left: 0; border-left: 0; }
+.account-overview > div:last-child { padding-right: 0; }
+.field-label { display: block; font-size: 11px; color: #586b8e; margin-bottom: 12px; }
+.account-balance { font-size: clamp(20px,2vw,28px); font-weight: 600; letter-spacing: -.9px; white-space: nowrap; }
+.last-movement-date { display: block; font-size: 12px; font-weight: 500; }
+.last-movement-amount { display: block; margin-top: 5px; font-size: 12px; color: #5c6e8e; }
+.account-state { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; }
+.field-description { display: block; font-size: 11px; color: #5c6e8e; margin-top: 5px; }
+.account-info { display: grid; grid-template-columns: 1.2fr 1fr; border: 1px solid var(--border); border-radius: 7px; padding: 17px 17px 18px; gap: 21px; }
+.account-fields { margin: 15px 0 0; }
+.account-fields > div { display: grid; grid-template-columns: 1.15fr 1fr; gap: 13px; padding: 7px 0; font-size: 11px; }
+.account-fields dt { color: #62728d; }
+.account-fields dd { margin: 0; font-weight: 500; }
+.account-notes { padding-left: 20px; border-left: 1px solid var(--border); margin-top: 5px; }
+.account-notes h3 { font-family: var(--font-body); color: #62728d; font-size: 11px; font-weight: 400; margin: 0 0 8px; }
+.notes-box { border-radius: 6px; background: #f7f9fc; min-height: 100px; padding: 13px; display: flex; justify-content: space-between; gap: 8px; align-items: flex-start; }
+.notes-box p { font-size: 11px; line-height: 1.7; }
+.note-edit { background: none; border: 0; color: #6a7b99; padding: 0; }
+.note-edit .icon { width: 14px; height: 14px; }
+.notes-hint { color: #738198; font-size: 10px; margin-top: 9px; line-height: 1.6; }
+.account-tools { margin-top: 20px; padding: 17px 20px 20px; }
+.tools-grid { margin-top: 15px; display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 13px; }
+.tool-card { display: flex; align-items: center; gap: 11px; text-align: left; border: 1px solid var(--border); border-radius: 7px; background: #fff; min-height: 79px; padding: 15px 12px; }
+.tool-icon { height: 36px; width: 36px; display: flex; align-items: center; justify-content: center; border-radius: 9px; background: #f0f5ff; color: var(--blue); flex-shrink: 0; }
+.tool-icon .icon { width: 21px; height: 21px; }
+.tool-icon.danger-icon { background: #fff2f1; color: #c44f50; }
+.tool-card strong { display: block; font-size: 11px; font-weight: 600; }
+.tool-card small { display: block; margin-top: 4px; color: #657591; font-size: 10px; }
+.tool-chevron { width: 14px; height: 14px; margin-left: auto; color: #8294b1; }
+.site-footer { display: flex; justify-content: space-between; gap: 16px; max-width: 1536px; margin: auto; padding: 0 48px 23px; font-size: 10px; color: #6d7b92; }
+.site-footer > div { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+.site-footer strong { font-weight: 500; }
+.prototype-dot { display: inline-block; height: 5px; width: 5px; border-radius: 50%; background: #8295b0; }
+.footer-divider { color: #adb8c9; margin: 0 3px; }
+.design-notice { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); max-width: min(560px,calc(100% - 32px)); background: var(--navy); color: #fff; padding: 13px 16px; display: flex; align-items: center; gap: 10px; z-index: 20; border-radius: 9px; box-shadow: 0 8px 30px #08184c25; font-size: 12px; }
+.design-notice > .icon { width: 18px; }
+.design-notice button { background: transparent; color: #fff; border: 0; padding: 3px; display: flex; margin-left: auto; }
+@media (min-width: 1650px) { .header-inner, .main-layout, .site-footer { max-width: 1600px; } }
+@media (max-width: 1270px) {
+ .header-inner { gap: 25px; padding-inline: 30px; }
+ .main-layout, .site-footer { padding-inline: 30px; }
+ .top-nav { gap: 18px; }
+ .brand { font-size: 15px; gap: 9px; }
+ .metric { gap: 9px; padding: 17px 13px; }
+ .metric-icon { width: 36px; height: 36px; }
+ .metric-icon .icon { width: 21px; height: 21px; }
+ .metric-value { font-size: 20px; }
+ .secondary-grid { grid-template-columns: 1fr 1fr; }
+ .scenarios { grid-column: 1/-1; }
+ .scenarios .scenario-row { display: inline-grid; width: calc(33.333% - 14px); margin-right: 14px; border-bottom: 0; padding: 14px 0 4px; grid-template-columns: 28px 1fr auto; }
+ .scenarios .scenario-row .spark { display: none; }
+ .indicator { padding-inline: 12px; gap: 7px; }
+ .indicator-icon { width: 27px; height: 27px; }
+ .indicator strong { font-size: 13px; }
+ .bank-workspace { grid-template-columns: minmax(300px,.85fr) minmax(0,1.35fr); gap: 16px; }
+ .bank-list-toolbar { grid-template-columns: 1fr; }
+ .sort-preview { min-height: 30px; }
+ .bank-option { gap: 9px; padding: 15px 8px; }
+ .bank-option-value strong { font-size: 12px; }
+ .bank-option-copy strong { font-size: 11px; }
+ .account-heading { padding: 18px 17px; }
+ .account-title-line h2 { font-size: 15px; }
+ .account-title-line { gap: 6px; }
+ .account-identity { gap: 9px; }
+ .bank-avatar.large { width: 42px; height: 42px; }
+ .account-actions { gap: 0; }
+ .account-content { padding: 15px; }
+ .account-overview { padding: 18px 13px; }
+ .account-overview > div { padding-inline: 12px; }
+ .account-balance { font-size: 21px; }
+ .account-info { gap: 14px; padding: 14px; grid-template-columns: 1.4fr 1fr; }
+ .account-fields > div { gap: 8px; font-size: 10px; }
+ .account-notes { padding-left: 13px; }
+ .tool-card { gap: 8px; padding: 11px 9px; }
+ .tool-icon { width: 30px; height: 30px; }
+ .tool-chevron { display: none; }
+}
+@media (max-width: 1030px) {
+ .header-inner { flex-wrap: wrap; gap: 8px 20px; padding-top: 15px; }
+ .top-nav { order: 3; width: 100%; margin-left: 0; justify-content: center; gap: 37px; min-height: 48px; }
+ .header-date { margin-left: auto; }
+ .page-heading { align-items: flex-start; }
+ .heading-controls { justify-content: flex-start; }
+ .period-button { padding-inline: 8px; }
+ .metric { display: block; padding: 16px; }
+ .metric-icon { width: 30px; height: 30px; margin-bottom: 8px; }
+ .metric-icon .icon { width: 18px; height: 18px; }
+ .metric h2 { font-size: 10px; }
+ .metric-value { font-size: 19px; }
+ .charts-grid { grid-template-columns: 1fr 1fr; }
+ .charts-grid .section-head { align-items: flex-start; flex-direction: column; gap: 8px; }
+ .projection-chart, .income-chart { height: 210px; }
+ .indicators-grid { grid-template-columns: repeat(3,minmax(0,1fr)); gap: 18px 0; }
+ .indicator:nth-child(4) { border-left: 0; padding-left: 0; }
+ .bank-workspace { grid-template-columns: minmax(260px,.8fr) minmax(0,1.3fr); }
+ .bank-avatar { width: 34px; height: 34px; font-size: 9px; }
+ .bank-option { gap: 7px; min-height: 87px; }
+ .bank-option-copy strong { font-size: 10px; }
+ .bank-option-copy small { font-size: 10px; }
+ .bank-option-value strong { font-size: 11px; }
+ .row-chevron { display: none; }
+ .account-actions .button-icon { display: none; }
+ .account-title-line { display: block; }
+ .account-title-line .status-badge { margin-top: 4px; }
+ .account-overview { grid-template-columns: 1.2fr 1fr; row-gap: 16px; }
+ .account-overview > div:last-child { grid-column: 1/-1; border: 0; border-top: 1px solid #e0e8f4; padding: 10px 0 0; display: flex; align-items: center; gap: 12px; }
+ .account-overview > div:last-child .field-label { margin: 0; }
+ .account-overview > div:last-child .field-description { margin: 0; }
+ .account-info { grid-template-columns: 1fr; }
+ .account-fields > div { font-size: 11px; padding-block: 5px; }
+ .account-notes { border-left: 0; border-top: 1px solid var(--border); padding: 12px 0 0; }
+ .notes-box { min-height: 65px; }
+ .account-tabs { gap: 16px; padding-inline: 16px; }
+ .account-tab { padding-inline: 3px; font-size: 11px; }
+ .tools-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+ .tool-chevron { display: block; }
+}
+@media (max-width: 760px) {
+ .header-inner, .main-layout, .site-footer { padding-inline: 20px; }
+ .header-inner { padding-top: 13px; }
+ .brand { font-size: 15px; }
+ .brand-mark .icon { width: 25px; height: 25px; }
+ .header-date { font-size: 10px; gap: 6px; padding: 6px 8px; }
+ .header-date .icon { width: 14px; height: 14px; }
+ .top-nav { gap: 0; justify-content: space-between; min-height: 46px; }
+ .top-nav a, .nav-pending { font-size: 12px; padding-inline: 2px; }
+ .main-layout { padding-top: 24px; }
+ .page-heading { flex-direction: column; gap: 16px; margin-bottom: 18px; }
+ .page-description { font-size: 12px; }
+ .heading-controls { flex-direction: row; align-items: center; justify-content: space-between; width: 100%; gap: 10px; }
+ .design-label { font-size: 9px; }
+ .period-button { padding: 7px 8px; font-size: 10px; min-height: 34px; }
+ .metrics-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 11px; }
+ .metric { min-height: 132px; padding: 16px; }
+ .metric-value { font-size: 20px; }
+ .metric-note { font-size: 10px; }
+ .charts-grid { grid-template-columns: 1fr; gap: 13px; }
+ .charts-grid .section-head { flex-direction: row; align-items: center; }
+ .chart-legend { gap: 12px; font-size: 9px; }
+ .projection-chart, .income-chart { height: auto; }
+ .secondary-grid { grid-template-columns: 1fr; gap: 13px; }
+ .distribution-body { grid-template-columns: 145px 1fr; }
+ .distribution-legend dt { font-size: 12px; }
+ .distribution-legend dd { font-size: 11px; }
+ .scenarios { grid-column: auto; }
+ .scenarios .scenario-row { width: 100%; margin: 0; display: grid; grid-template-columns: 31px 1fr 70px auto; border-bottom: 1px solid #eef1f6; padding: 14px 0; }
+ .scenarios .scenario-row .spark { display: block; }
+ .scenario-row strong { font-size: 12px; }
+ .scenario-row small { font-size: 10px; }
+ .scenarios .scenario-row:last-child { border: 0; padding-bottom: 0; }
+ .key-indicators { padding: 18px; }
+ .indicators-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 20px 0; }
+ .indicator { padding-inline: 14px; }
+ .indicator:nth-child(4) { border-left: 1px solid var(--border); padding-left: 14px; }
+ .indicator:nth-child(odd) { border-left: 0; padding-left: 0; }
+ .indicator strong { font-size: 14px; }
+ .indicator p { font-size: 10px; }
+ .indicator small { font-size: 9px; }
+ .bank-workspace { grid-template-columns: 1fr; }
+ .bank-list-panel { padding: 12px; }
+ .bank-list-toolbar { grid-template-columns: minmax(0,1fr) auto; }
+ .sort-preview { font-size: 9px; }
+ .search-preview { height: 40px; }
+ .bank-option { min-height: 74px; gap: 12px; padding: 13px 10px; }
+ .bank-option-copy strong { font-size: 12px; }
+ .bank-option-copy small { font-size: 11px; }
+ .bank-option-value strong { font-size: 13px; }
+ .bank-avatar { width: 37px; height: 37px; font-size: 10px; }
+ .row-chevron { display: block; width: 13px; }
+ .list-footnote { margin-top: 8px; }
+ .account-heading { padding: 20px 16px; }
+ .account-title-line h2 { font-size: 17px; }
+ .account-title-line { display: flex; }
+ .account-title-line .status-badge { margin-top: 0; }
+ .account-identity p { font-size: 11px; }
+ .account-overview { grid-template-columns: 1fr 1fr; }
+ .account-balance { font-size: 26px; }
+ .account-overview > div:last-child { display: flex; }
+ .account-info { grid-template-columns: 1fr; }
+ .account-fields > div { font-size: 12px; padding-block: 7px; }
+ .account-tabs { gap: 0; justify-content: space-between; }
+ .account-tab { font-size: 12px; min-height: 44px; }
+ .account-tools { padding: 18px 14px; }
+ .tools-grid { gap: 9px; }
+ .tool-card { padding: 13px 10px; gap: 8px; }
+ .tool-card strong { font-size: 11px; }
+ .tool-card small { font-size: 9px; }
+ .tool-icon { width: 28px; height: 28px; }
+ .tool-chevron { display: none; }
+ .button { min-height: 40px; }
+ .site-footer { flex-direction: column; gap: 6px; padding-bottom: 20px; font-size: 9px; }
+}
+@media (max-width: 420px) {
+ .header-inner, .main-layout, .site-footer { padding-inline: 14px; }
+ .brand { font-size: 13px; letter-spacing: -.5px; gap: 7px; }
+ .header-date { padding: 5px 6px; font-size: 9px; }
+ .header-date .icon { display: none; }
+ .top-nav a, .nav-pending { font-size: 10px; }
+ h1 { font-size: 26px; }
+ .heading-controls { flex-wrap: wrap; }
+ .heading-controls .design-label { order: 2; }
+ .period-control { width: 100%; justify-content: space-between; }
+ .period-button { flex: 1; padding-inline: 5px; }
+ .banks-page .heading-controls { flex-wrap: nowrap; }
+ .banks-page .heading-controls .design-label { order: 0; }
+ .metric { padding: 13px 12px; }
+ .metric-value { font-size: 19px; }
+ .metric h2 { font-size: 9px; }
+ .metric-note { font-size: 9px; }
+ .chart-legend { gap: 7px; font-size: 8px; }
+ h2 { font-size: 13px; }
+ .projection-surface, .income-surface { padding-inline: 13px; }
+ .chart-labels { font-size: 12px; }
+ .secondary-grid > .surface { padding: 15px; }
+ .distribution-body { grid-template-columns: 126px 1fr; gap: 7px; }
+ .donut { width: 126px; height: 126px; }
+ .donut-label strong { font-size: 11px; }
+ .distribution-legend dt { font-size: 10px; }
+ .distribution-legend dd { font-size: 10px; gap: 4px; flex-wrap: wrap; }
+ .scenarios .scenario-row { grid-template-columns: 26px 1fr 45px auto; gap: 5px; }
+ .scenario-icon { width: 25px; height: 25px; }
+ .scenario-row strong { font-size: 11px; }
+ .scenario-row small { font-size: 9px; }
+ .scenarios .small-label { font-size: 9px; }
+ .key-indicators { padding: 15px; }
+ .indicator { padding-inline: 9px; gap: 7px; }
+ .indicator-icon { width: 25px; height: 25px; }
+ .indicator-icon .icon { width: 16px; }
+ .indicator strong { font-size: 12px; }
+ .indicator p { font-size: 9px; }
+ .indicator small { font-size: 8px; }
+ .bank-list-toolbar { grid-template-columns: 1fr; gap: 8px; }
+ .sort-preview { min-height: 35px; font-size: 11px; }
+ .bank-option { gap: 8px; padding-inline: 7px; }
+ .bank-option-copy strong { font-size: 11px; }
+ .bank-option-value strong { font-size: 11px; }
+ .bank-option-value .spark { width: 66px; }
+ .bank-avatar { width: 32px; height: 32px; font-size: 9px; }
+ .row-chevron { width: 11px; }
+ .account-heading { flex-wrap: wrap; gap: 13px; }
+ .account-identity { flex: 1; }
+ .account-title-line h2 { font-size: 15px; }
+ .account-actions .button { padding: 5px 9px; min-height: 33px; font-size: 10px; }
+ .account-actions .button .icon { width: 13px; }
+ .bank-avatar.large { width: 38px; height: 38px; font-size: 10px; }
+ .account-content { padding: 12px; }
+ .account-overview { padding: 17px 13px; }
+ .account-overview > div { padding-inline: 10px; }
+ .account-balance { font-size: 22px; }
+ .field-label, .last-movement-date, .last-movement-amount { font-size: 10px; }
+ .account-state, .field-description { font-size: 10px; }
+ .account-fields > div { font-size: 11px; grid-template-columns: 1.15fr 1fr; }
+ .account-info { padding: 13px; }
+ .tools-grid { grid-template-columns: 1fr; }
+ .tool-card { min-height: 62px; }
+ .tool-card strong { font-size: 12px; }
+ .tool-card small { font-size: 10px; }
+ .tool-chevron { display: block; }
+ .account-tools .small-label { font-size: 9px; }
+}
+@media (prefers-reduced-motion: reduce) {
+ html { scroll-behavior: auto; }
+ *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+/* Desktop legibility: compact controls without turning account details into microcopy. */
+@media (min-width: 1271px) {
+ .header-inner { display: grid; grid-template-columns: minmax(260px,1fr) auto minmax(170px,1fr); gap: 30px; }
+ .top-nav { margin-left: 0; }
+ .header-date { justify-self: end; }
+ .metric h2 { font-size: 12px; }
+ .metric-note { font-size: 11px; }
+ .chart-legend { font-size: 11px; }
+ .bank-option-copy strong { font-size: 13px; }
+ .bank-option-copy small { font-size: 12px; }
+ .bank-option-value > strong { font-size: 14px; }
+ .account-fields > div { font-size: 12px; }
+ .field-label { font-size: 12px; }
+ .last-movement-date, .last-movement-amount, .account-state { font-size: 13px; }
+ .account-tab { font-size: 13px; }
+ .notes-box p { font-size: 12px; }
+ .tool-card strong { font-size: 12px; }
+ .tool-card small { font-size: 11px; }
+ .distribution-legend dt, .distribution-legend dd { font-size: 11px; }
+ .scenario-row strong { font-size: 12px; }
+ .indicator p { font-size: 11px; }
+}
+.projection-mobile { display: none; }
+@media (max-width: 760px) {
+ .projection-chart { display: none; }
+ .projection-mobile { display: block; width: 100%; height: auto; margin-top: 13px; }
+ .projection-mobile .chart-labels { font-size: 10px; }
+ .projection-mobile .tooltip-caption { font-size: 10px; }
+ .projection-mobile .tooltip-number { font-size: 12px; }
+ .income-chart .chart-labels { font-size: 14px; }
+ .button { min-height: 44px; }
+ .note-edit { min-width: 26px; min-height: 26px; }
+}
